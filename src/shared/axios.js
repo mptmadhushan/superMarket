@@ -4,7 +4,7 @@ import { BASE_URL } from './configs';
 
 // TODO: Change name of APIKit
 let APIKit = axios.create({
-  baseURL: `${BASE_URL}/api`,
+  baseURL: `${BASE_URL}`,
   timeout: 10000,
 });
 

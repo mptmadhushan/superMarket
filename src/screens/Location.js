@@ -10,6 +10,7 @@ import {
   View,
   FlatList,
 } from 'react-native';
+import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import Toast from 'react-native-simple-toast';
 import { FlatGrid } from 'react-native-super-grid';
@@ -43,52 +44,55 @@ export default function ScanResult({ navigation, route }) {
   const userAuthToken = useSelector(state => state.auth.token);
 
   const [scanResult, setScanResult] = useState(initialData);
+  const [resp, setResp] = useState(initialData);
+  const [resp2, setResp2] = useState('');
   const [items, setItems] = React.useState([
-    { name: 'TURQUOISE', code: '#1abc9c' },
-    { name: 'EMERALD', code: '#2ecc71' },
-    { name: 'PETER RIVER', code: '#3498db' },
-    { name: 'AMETHYST', code: '#9b59b6' },
-    { name: 'WET ASPHALT', code: '#34495e' },
-    { name: 'GREEN SEA', code: '#16a085' },
-    { name: 'NEPHRITIS', code: '#27ae60' },
-    { name: 'BELIZE HOLE', code: '#2980b9' },
-    { name: 'WISTERIA', code: '#8e44ad' },
-    { name: 'MIDNIGHT BLUE', code: '#2c3e50' },
-    { name: 'SUN FLOWER', code: '#f1c40f' },
-    { name: 'CARROT', code: '#e67e22' },
-    { name: 'ALIZARIN', code: '#e74c3c' },
-    { name: 'CLOUDS', code: '#ecf0f1' },
-    { name: 'CONCRETE', code: '#95a5a6' },
-    { name: 'ORANGE', code: '#f39c12' },
-    { name: 'PUMPKIN', code: '#d35400' },
-    { name: 'POMEGRANATE', code: '#c0392b' },
+    { id: 1, name: 'TURQUOISE', code: '#e74c3c' },
+    { id: 2, name: 'EMERALD', code: '#e74c3c' },
+    { id: 3, name: 'PETER RIVER', code: '#e74c3c' },
+    { id: 4, name: 'AMETHYST', code: '#e74c3c' },
+    { id: 5, name: 'WET ASPHALT', code: '#e74c3c' },
+    { id: 6, name: 'GREEN SEA', code: '#e74c3c' },
+    { id: 7, name: 'NEPHRITIS', code: '#e74c3c' },
+    { id: 8, name: 'BELIZE HOLE', code: '#e74c3c' },
+    { id: 9, name: 'WISTERIA', code: '#e74c3c' },
+    { id: 10, name: 'MIDNIGHT BLUE', code: '#e74c3c' },
+    { id: 11, name: 'SUN FLOWER', code: '#e74c3c' },
+    { id: 12, name: 'CARROT', code: '#e74c3c' },
+    { id: 13, name: 'ALIZARIN', code: '#e74c3c' },
+    { id: 14, name: 'CLOUDS', code: '#e74c3c' },
+    { id: 15, name: 'CONCRETE', code: '#e74c3c' },
+    { id: 16, name: 'ORANGE', code: '#e74c3c' },
+    { id: 17, name: 'PUMPKIN', code: '#e74c3c' },
+    { id: 18, name: 'POMEGRANATE', code: '#c0392b' },
   ]);
+  const { nfcData } = route.params;
 
   useEffect(() => {
     //TODO: extract this to the shared directory
     const showToast = message => {
       Toast.showWithGravity(message, Toast.SHORT, Toast.TOP);
     };
+    console.log(nfcData, 'sa');
+    axios
+      .get(
+        `http://ec2-54-242-87-59.compute-1.amazonaws.com:8000/api/v1.0/shelf-detail/${nfcData.id}/`,
+      )
+      .then(response => {
+        console.log(response.data);
+
+        const slug = response.data.location.split('-').pop();
+        console.log(slug);
+        setResp(response.data);
+        setResp2(parseInt(slug));
+      });
     setScanResult({
       name: 'item3',
       price: 340,
       image: 'https://picsum.photos/200/300',
     });
   }, []);
-  const care = [
-    {
-      icon: icons.wash,
-      text: 'Machine wash at max. 300C/860F with short spin cycle',
-    },
-    {
-      icon: icons.doNot,
-      text: 'Do not use bleach',
-    },
-    {
-      icon: icons.iron,
-      text: 'Iron at a maximum of 11OC/230F',
-    },
-  ];
+
   const header = (
     <View style={styles.rowFlexScanResHed}>
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>
@@ -136,12 +140,10 @@ export default function ScanResult({ navigation, route }) {
           )}
         </View>
         <View style={styles.rowFlexScanRes}>
-          <Text style={styles.itemTextStyle}>
-            Directions: 3rd Rack , First deck
-          </Text>
+          <Text style={styles.itemTextStyle}>{resp.location}</Text>
         </View>
         <Text style={styles.desTitle}>Details</Text>
-        <Description text={scanResult.desc} />
+        <Description text={nfcData.description} />
         <View>
           <FlatGrid
             itemDimension={50}
@@ -152,8 +154,13 @@ export default function ScanResult({ navigation, route }) {
             spacing={10}
             renderItem={({ item }) => (
               <View
-                style={[styles.itemContainer, { backgroundColor: item.code }]}>
-                <Text style={styles.itemCode}>{item.code}</Text>
+                style={[
+                  styles.itemContainer,
+                  {
+                    backgroundColor: item.id === resp2 ? '#2ecc71' : '#e74c3c',
+                  },
+                ]}>
+                <Text style={styles.itemCode}>{item.id}</Text>
               </View>
             )}
           />

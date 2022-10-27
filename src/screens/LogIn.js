@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import Toast from 'react-native-simple-toast';
-
+import { ScreenNames } from '../navigation/MainNavigator';
 import { COLORS, icons, images, SIZES } from '../constants';
 import { setClientToken } from '../shared/axios';
 import { login } from '../api/authAPI';
@@ -57,7 +57,7 @@ const LoginScreen = ({ navigation }) => {
       if (token) {
         setClientToken(token);
         dispatch(authSuccess(token));
-        navigation.navigate('Home');
+        navigation.navigate(ScreenNames.Home);
       }
     });
   });
@@ -67,29 +67,36 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const onPressLogin = () => {
-    dispatch(authSuccess('data.token'));
-    navigation.navigate('Home');
-    // const payload = {
-    //   username: userEmail,
-    //   password: userPassword,
-    // };
-    // login(payload)
-    //   .then(response => {
-    //     if (response.error || !response.data.token) {
-    //       showToast(response.error);
-    //       return;
-    //     }
-    //     const { data } = response;
-    //     setClientToken(data.token);
-    //     storeUserToken(data.token).then(result =>
-    //       console.log('Remove me if not needed', result),
-    //     );
-    //     dispatch(authSuccess(data.token));
-    //     navigation.navigate('Home');
-    //   })
-    //   .catch(error => {
-    //     showToast(error.response.data.message);
-    //   });
+    // dispatch(authSuccess('data.token'));
+    // navigation.navigate('Home');
+    const payload = {
+      username: userEmail,
+      password: userPassword,
+    };
+    console.log('hey');
+
+    login(payload)
+      .then(response => {
+        console.log(
+          '🚀 ~ file: LogIn.js ~ line 80 ~ onPressLogin ~ response',
+          response,
+        );
+        if (response.error || !response.data.access) {
+          showToast(response.error);
+          return;
+        }
+        const { data } = response;
+        setClientToken(data.access);
+        storeUserToken(data.access).then(result =>
+          console.log('Remove me if not needed', result),
+        );
+        dispatch(authSuccess(data.token));
+        navigation.navigate('Home');
+        console.log('hey');
+      })
+      .catch(error => {
+        showToast(error.response.data.message);
+      });
   };
   const passwordInputRef = createRef();
 

@@ -50,7 +50,7 @@ export default function ScanResult({ navigation, route }) {
 
   const addItemToCart = () => {
     dispatch(addItemToCartActionCreator(scanResult));
-    navigation.navigate('ItemsScreen');
+    navigation.navigate('Location', { nfcData });
   };
 
   useEffect(() => {
@@ -73,24 +73,6 @@ export default function ScanResult({ navigation, route }) {
       price: 340,
       image: 'https://picsum.photos/200/300',
     });
-
-    // authenticateProduct(payload)
-    //   .then(response => {
-    //     if (response.error || !response.data.token) {
-    //       return;
-    //     }
-    //     const { data } = response;
-    //     if (!data || !data.success) {
-    //       navigation.navigate('ScanFail', {
-    //         nfcData,
-    //       });
-    //       return;
-    //     }
-    //     setScanResult(data.product);
-    //   })
-    //   .catch(error => {
-    //     showToast(error.response.data.message);
-    //   });
   }, []);
   const care = [
     {
@@ -153,7 +135,7 @@ export default function ScanResult({ navigation, route }) {
           )}
         </View>
         <View style={styles.rowFlexScanRes}>
-          <Text style={styles.itemTextStyle}>{scanResult.name}</Text>
+          <Text style={styles.itemTextStyle}>{nfcData.name}</Text>
           <View style={styles.rowFlex}>
             <TouchableOpacity
               style={{
@@ -169,10 +151,10 @@ export default function ScanResult({ navigation, route }) {
           </View>
         </View>
         <View style={styles.rowFlexScanRes}>
-          <Discount discount={scanResult.discount} price={scanResult.price} />
+          <Discount discount={nfcData.discount} price={nfcData.price} />
         </View>
         <Text style={styles.desTitle}>Details</Text>
-        <Description text={scanResult.desc} />
+        <Description text={nfcData.description} />
         <View>
           <Text style={styles.desTitle}>CARE</Text>
           <View style={{ marginTop: 10, marginBottom: 10 }}>

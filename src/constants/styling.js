@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     borderRadius: 5,
     padding: 10,
-    height: 150,
+    height: 50,
   },
   itemName: {
     fontSize: 16,

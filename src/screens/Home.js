@@ -41,37 +41,23 @@ export default function Home({ navigation }) {
         image: 'https://picsum.photos/200/300',
       },
     ];
-    setOffers(data);
-    // getOffers()
-    //   .then(response => {
-    //     if (response.error) {
-    //       showToast(response.error);
-    //       return;
-    //     }
-    //     const { data } = response;
-    //     setOffers(data);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
+    // setOffers(data);
+    getOffers()
+      .then(response => {
+        if (response.error) {
+          showToast(response.error);
+          return;
+        }
+        const { data } = response;
+        console.log('🚀 ~ file: Home.js ~ line 52 ~ useEffect ~ data', data);
+        setOffers(data.products);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }, []);
 
-  const onScanDummyButtonClick = () => {
-    // Please uncomment one of the readings to test on dummy functionalities
-
-    // Option1: Authentic Card Reading
-    const nfcData = {
-      uuid: '0405e4d29f6581',
-      signature:
-        'a9a7f653a537d2ecb67d0b03ee861faf5f3dc8f5d2c6052e631bce0cce0dc526',
-    };
-
-    // Option2: Non-Authentic Card Reading
-    // const nfcData = {
-    //   uuid: '04719dd29f6580',
-    //   signature: 'ebf21ae90ec620ea9219dad1fb9fb7c58d5461b9654f3b5e7b1fed4c9f461153',
-    // };
-
+  const onScanDummyButtonClick = nfcData => {
     navigation.navigate('ScanResult', {
       nfcData,
     });
@@ -134,7 +120,7 @@ export default function Home({ navigation }) {
             ? offers.map(data => {
                 return (
                   <View
-                    key={data.name}
+                    key={data.id}
                     style={{
                       width: SIZES.width * 0.8,
                       marginLeft: 20,
@@ -142,7 +128,7 @@ export default function Home({ navigation }) {
                     <Image
                       // source={images.shoe}
                       source={{
-                        uri: `${data.image}`,
+                        uri: `https://picsum.photos/200/300`,
                         headers: {
                           // Authorization:
                           //   'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2MzE2MzA1ODMsImV4cCI6MTYzMjg0MDE4M30.Pbw9-GCTYCNV-WyC7MOHw1UzN20LLVdbGWU3yNm0qyY',
@@ -165,7 +151,7 @@ export default function Home({ navigation }) {
                       </View>
                       <Button
                         text="View Item"
-                        onPress={onScanDummyButtonClick}
+                        onPress={() => onScanDummyButtonClick(data)}
                       />
                     </View>
                   </View>
