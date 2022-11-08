@@ -4,8 +4,10 @@ import {
   ScrollView,
   Image,
   Platform,
+  TextInput,
   StyleSheet,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Toast from 'react-native-simple-toast';
@@ -15,9 +17,11 @@ import Button from '../components/Button';
 
 import { images, SIZES, COLORS } from '../constants';
 import { getOffers } from '../api/offersAPI';
+import { searchProducts } from '../api/searchProducts';
 
 export default function Home({ navigation }) {
   const [offers, setOffers] = useState([]);
+  const [search, setSearch] = useState([]);
   const userAuthToken = useSelector(state => state.auth.token);
 
   useEffect(() => {
@@ -56,38 +60,49 @@ export default function Home({ navigation }) {
         console.log(error);
       });
   }, []);
-
-  const onScanDummyButtonClick = nfcData => {
-    navigation.navigate('ScanResult', {
-      nfcData,
+  searchProducts(search)
+    .then(response => {
+      if (response.error) {
+        showToast(response.error);
+        return;
+      }
+      const { data } = response;
+      console.log('🚀 ~ file: Home.js ~ line 52 ~ useEffect ~ data', data);
+      setOffers(data.products);
+    })
+    .catch(error => {
+      console.log(error);
     });
-  };
-
   const showToast = message => {
     Toast.showWithGravity(message, Toast.SHORT, Toast.TOP);
   };
 
-  // const onNFCTagRead = () => {
-  //   NFCReader.beginScanning((uid, ecc_sig, session_cancelled) => {
-  //     if (session_cancelled) {
-  //       Toast.showWithGravity('Reading cancelled', Toast.SHORT, Toast.TOP);
-  //     } else if (uid === UNKNOWN_UID || ecc_sig === UNKNOWN_ECC_SIG) {
-  //       Toast.showWithGravity(
-  //         'Invalid tag data or error reading tag data',
-  //         Toast.SHORT,
-  //         Toast.TOP,
-  //       );
-  //     } else {
-  //       navigation.navigate('ScanResult', {
-  //         nfcData: {
-  //           uuid: uid,
-  //           signature: ecc_sig,
-  //         },
-  //       });
-  //     }
-  //   });
-  // };
-
+  const userName = (
+    <View style={styles.rowFlex}>
+      <View style={styles.SectionStyle}>
+        <TextInput
+          style={{
+            height: 40,
+            borderColor: 'gray',
+            borderWidth: 1,
+            width: SIZES.width * 0.5,
+            borderRadius: 30,
+            paddingLeft: 15,
+            placeholderTextColor: 'gray',
+          }}
+          onChangeText={text => setSearch(text)}
+          value={search}
+          placeholder="Search here!"
+        />
+      </View>
+      <TouchableOpacity
+        style={styles.buttonStyle}
+        activeOpacity={0.5}
+        onPress={() => searchProducts()}>
+        <Text style={styles.buttonTextStyle}>Search</Text>
+      </TouchableOpacity>
+    </View>
+  );
   return (
     <View style={styles.container}>
       <View style={styles.centerFlex}>
@@ -100,7 +115,8 @@ export default function Home({ navigation }) {
           }}
         />
       </View>
-      <View style={styles.centerFlex}>
+      {userName}
+      {/* <View style={styles.centerFlex}>
         <ScrollView
           horizontal
           pagingEnabled
@@ -138,7 +154,7 @@ export default function Home({ navigation }) {
                       resizeMode="cover"
                       style={{
                         width: SIZES.width * 0.8,
-                        height: SIZES.width,
+                        height: SIZES.width * 0.8,
                         marginBottom: SIZES.height * 0.05,
                       }}
                     />
@@ -159,7 +175,7 @@ export default function Home({ navigation }) {
               })
             : null}
         </ScrollView>
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -191,11 +207,32 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+
   rowFlex: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-around',
     alignItems: 'center',
     alignContent: 'center',
+  },
+
+  buttonStyle: {
+    backgroundColor: COLORS.black,
+    borderWidth: 0,
+    color: COLORS.white,
+    height: 40,
+    width: 130,
+    alignItems: 'center',
+    borderRadius: 30,
+    marginLeft: 35,
+    marginRight: 35,
+    marginTop: 20,
+    marginBottom: 25,
+  },
+  buttonTextStyle: {
+    color: '#FFFFFF',
+    paddingVertical: 2,
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   container: {
     flex: 1,
