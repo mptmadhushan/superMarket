@@ -46,7 +46,7 @@ export default function Home({ navigation }) {
       },
     ];
     // setOffers(data);
-    getOffers()
+    getOffers(1)
       .then(response => {
         if (response.error) {
           showToast(response.error);
@@ -144,8 +144,8 @@ export default function Home({ navigation }) {
       </View>
 
       <View style={styles.centerFlex}>
-        
         <ScrollView
+          keyboardShouldPersistTaps="handled"
           horizontal
           pagingEnabled
           decelerationRate={0}
@@ -156,9 +156,6 @@ export default function Home({ navigation }) {
             left: 20,
             bottom: 0,
             right: 20,
-          }}
-          contentContainerStyle={{
-            paddingHorizontal: Platform.OS === 'android' ? 20 : 0,
           }}>
           {offers
             ? offers.map(data => {
@@ -182,7 +179,7 @@ export default function Home({ navigation }) {
                       resizeMode="cover"
                       style={{
                         width: SIZES.width * 0.8,
-                        height: SIZES.width * 0.5,
+                        height: SIZES.width * 0.8,
                         marginBottom: SIZES.height * 0.05,
                       }}
                     />
