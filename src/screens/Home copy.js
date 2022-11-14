@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  TouchableOpacity,
   ScrollView,
   Image,
-  TextInput,
   Platform,
+  TextInput,
   StyleSheet,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Toast from 'react-native-simple-toast';
 import { useSelector } from 'react-redux';
-import { searchProducts } from '../api/searchProducts';
 
 import Button from '../components/Button';
 
 import { images, SIZES, COLORS } from '../constants';
 import { getOffers } from '../api/offersAPI';
+import { searchProducts } from '../api/searchProducts';
 
 export default function Home({ navigation }) {
   const [offers, setOffers] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState([]);
   const userAuthToken = useSelector(state => state.auth.token);
 
   useEffect(() => {
@@ -53,62 +53,61 @@ export default function Home({ navigation }) {
           return;
         }
         const { data } = response;
-        console.log('🚀 ~useefect data', data);
+        console.log('🚀 ~ file: Home.js ~ line 52 ~ useEffect ~ data', data);
         setOffers(data.products);
       })
       .catch(error => {
         console.log(error);
       });
   }, []);
-  const searchItem = () => {
-    searchProducts(search)
-      .then(response => {
-        if (response.error) {
-          showToast(response.error);
-          return;
-        }
-        const { data } = response;
-        console.log('🚀 ~ Search data', data);
-        setOffers(data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-  const onScanDummyButtonClick = nfcData => {
-    navigation.navigate('ScanResult', {
-      nfcData,
+  // const searchItem = () => {
+  searchProducts(search)
+    .then(response => {
+      if (response.error) {
+        showToast(response.error);
+        return;
+      }
+      const { data } = response;
+      console.log('🚀 ~ file: Home.js ~ line 52 ~ useEffect ~ data', data);
+      setOffers(data.products);
+    })
+    .catch(error => {
+      console.log(error);
     });
-  };
-
+  // };
   const showToast = message => {
     Toast.showWithGravity(message, Toast.SHORT, Toast.TOP);
   };
 
-  // const onNFCTagRead = () => {
-  //   NFCReader.beginScanning((uid, ecc_sig, session_cancelled) => {
-  //     if (session_cancelled) {
-  //       Toast.showWithGravity('Reading cancelled', Toast.SHORT, Toast.TOP);
-  //     } else if (uid === UNKNOWN_UID || ecc_sig === UNKNOWN_ECC_SIG) {
-  //       Toast.showWithGravity(
-  //         'Invalid tag data or error reading tag data',
-  //         Toast.SHORT,
-  //         Toast.TOP,
-  //       );
-  //     } else {
-  //       navigation.navigate('ScanResult', {
-  //         nfcData: {
-  //           uuid: uid,
-  //           signature: ecc_sig,
-  //         },
-  //       });
-  //     }
-  //   });
-  // };
-
+  const userName = (
+    <View style={styles.rowFlex}>
+      <View style={styles.SectionStyle}>
+        {/* <TextInput
+          style={{
+            height: 40,
+            borderColor: 'gray',
+            borderWidth: 1,
+            width: SIZES.width * 0.5,
+            borderRadius: 30,
+            paddingLeft: 15,
+            // placeholderTextColor: 'gray',
+          }}
+          onChangeText={text => setSearch(text)}
+          value={search}
+          placeholder="Search here!"
+        /> */}
+      </View>
+      <TouchableOpacity
+        style={styles.buttonStyle}
+        activeOpacity={0.5}
+        onPress={() => searchProducts()}>
+        <Text style={styles.buttonTextStyle}>Search</Text>
+      </TouchableOpacity>
+    </View>
+  );
   return (
     <View style={styles.container}>
-      <View style={styles.centerFlex}>
+      {/* <View style={styles.centerFlex}>
         <Image
           source={images.silicaLogo}
           resizeMode="contain"
@@ -117,34 +116,9 @@ export default function Home({ navigation }) {
             height: SIZES.width * 0.36,
           }}
         />
-        <View style={styles.rowFlex}>
-          <View style={styles.SectionStyle}>
-            <TextInput
-              style={{
-                height: 40,
-                borderColor: 'gray',
-                borderWidth: 1,
-                width: SIZES.width * 0.5,
-                borderRadius: 30,
-                paddingLeft: 25,
-                // placeholderTextColor: 'gray',
-              }}
-              onChangeText={text => setSearch(text)}
-              value={search}
-              placeholder="Search here!"
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.buttonStyle}
-            activeOpacity={0.5}
-            onPress={() => searchItem()}>
-            <Text style={styles.buttonTextStyle}>Search</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
+      </View> */}
+      {/* {userName} */}
       <View style={styles.centerFlex}>
-        
         <ScrollView
           horizontal
           pagingEnabled
@@ -182,7 +156,7 @@ export default function Home({ navigation }) {
                       resizeMode="cover"
                       style={{
                         width: SIZES.width * 0.8,
-                        height: SIZES.width * 0.5,
+                        height: SIZES.width * 0.8,
                         marginBottom: SIZES.height * 0.05,
                       }}
                     />
@@ -195,7 +169,7 @@ export default function Home({ navigation }) {
                       </View>
                       <Button
                         text="View Item"
-                        onPress={() => onScanDummyButtonClick(data)}
+                        // onPress={() => onScanDummyButtonClick(data)}
                       />
                     </View>
                   </View>
@@ -241,7 +215,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     alignContent: 'center',
-    marginLeft: 30,
   },
 
   buttonStyle: {

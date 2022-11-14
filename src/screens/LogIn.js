@@ -57,7 +57,7 @@ const LoginScreen = ({ navigation }) => {
       if (token) {
         setClientToken(token);
         dispatch(authSuccess(token));
-        navigation.navigate(ScreenNames.Home);
+        navigation.navigate('Home');
       }
     });
   });
